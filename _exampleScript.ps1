@@ -4,35 +4,6 @@
 $VerbosePreference = "Continue"
 $DebugPreference = "Continue"
 
-
-##  get private function definition files.
-$Private = @(Get-ChildItem -Path D:/.source/repos/tempdb/private/*.ps1 -ErrorAction Stop)
-
-##  dot source the private files
-Foreach ($import in $Private) {
-    Try {
-        Write-Verbose -Message "Import function $($import.Name)"
-        . $import.FullName
-    }
-    Catch {
-        Write-Error -Message "Failed to import function $($import.FullName): $PSItem"
-    }
-}
-
-##  get class definition files.
-$Classes = @(Get-ChildItem -Path D:/.source/repos/tempdb/classes/*.ps1 -ErrorAction Stop)
-
-##  dot source the classes files
-Foreach ($import in $Classes) {
-    Try {
-        Write-Verbose "Import class $($import.Name)"
-        . $import.FullName
-    }
-    Catch {
-        Write-Error -Message "Failed to import class $($import.FullName): $PSItem"
-    }
-}
-
 ##  parameter inputs from json manifest file
 $tempdbParam = @{
     ServerName = "db-oc21"
@@ -43,8 +14,11 @@ $tempdbParam = @{
 }
 
 ##  credential input
-##  $Credential = Get-Credential
+$Credential = Get-Credential
 
+##  dot source the files:
+. $PSScriptRoot\Connect-SQL.ps1
+. $PSScriptRoot\tempdb.ps1
 
 ##  create tempdb object.
 $classParameters = @{
@@ -68,3 +42,9 @@ $tempdb.Files = $tempdbParam.Files
 
 ##  set the state of the temporary database.
 $tempdb.Set()
+
+##  get the state of the temporary database.
+$tempdb.Get()
+
+##  test the state of the temporary database.
+$tempdb.Test()

@@ -66,15 +66,9 @@ function Connect-SQL
         }
         Write-Verbose "Create connection on: $serverInstance"
 
-        ##  create smo server object
-        $SMO = @{
-            TypeName     = "Microsoft.SqlServer.Management.Smo.Server"
-            ErrorAction  = "Stop"
-        }
-        Write-Verbose "Creating SQL Server Management Object."
-
         ##  open t-sql endpoint with target server.
-        $SQLServer = New-Object @SMO
+        Write-Verbose "Creating SQL Server Management Object."
+        $SQLServer = [Microsoft.SqlServer.Management.Smo.Server]::New()
         Write-Verbose "Server Management Object created."
 
         if ($SetupCredential) {
